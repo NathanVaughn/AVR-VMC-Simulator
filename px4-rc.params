@@ -1,4 +1,14 @@
 #!/bin/sh
 
+# disable failsafes
 param set NAV_DLL_ACT 0
 param set NAV_RCL_ACT 0
+
+# enable udp broadcasting
+param set MAV_0_BROADCAST 1
+
+# https://github.com/JonasVautherin/px4-gazebo-headless/blob/master/edit_rcS.bash
+# DOCKER_HOST=$(getent hosts host.docker.internal | awk '{ print $1 }')
+echo "Sending MAVLink streams to $DOCKER_HOST"
+sed -i "s/mavlink start \-x \-u \$udp_gcs_port_local -r 4000000/mavlink start -x -u \$udp_gcs_port_local -r 4000000 -t ${DOCKER_HOST}/" /work/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-rc.mavlink
+sed -i "s/mavlink start \-x \-u \$udp_offboard_port_local -r 4000000/mavlink start -x -u \$udp_offboard_port_local -r 4000000 -t ${DOCKER_HOST}/" /work/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-rc.mavlink
