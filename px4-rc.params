@@ -8,9 +8,10 @@ param set NAV_RCL_ACT 0
 param set MAV_0_BROADCAST 1
 
 # https://github.com/JonasVautherin/px4-gazebo-headless/blob/master/edit_rcS.bash
-HOST_DOCKER_INTERNAL=$(getent hosts host.docker.internal | awk '{ print $1 }')
-DOCKER_HOST="${DOCKER_HOST:-$HOST_DOCKER_INTERNAL}"
+MAVLINK_HOST_TARGET="${MAVLINK_HOST_TARGET:-"mavp2p"}"
+MAVP2P_IP_ADDRESS=$(getent hosts "$MAVLINK_HOST_TARGET" | awk '{ print $1 }')
+MAVLINK_IP_TARGET="${MAVLINK_IP_TARGET:-$MAVP2P_IP_ADDRESS}"
 
-echo "Sending MAVLink streams to $DOCKER_HOST"
-sed -i "s/mavlink start \-x \-u \$udp_gcs_port_local -r 4000000/mavlink start -x -u \$udp_gcs_port_local -r 4000000 -t ${DOCKER_HOST}/" /work/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-rc.mavlink
-sed -i "s/mavlink start \-x \-u \$udp_offboard_port_local -r 4000000/mavlink start -x -u \$udp_offboard_port_local -r 4000000 -t ${DOCKER_HOST}/" /work/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-rc.mavlink
+echo "Sending MAVLink streams to $MAVLINK_IP_TARGET"
+sed -i "s/mavlink start \-x \-u \$udp_gcs_port_local -r 4000000/mavlink start -x -u \$udp_gcs_port_local -r 4000000 -t ${MAVLINK_IP_TARGET}/" /work/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-rc.mavlink
+sed -i "s/mavlink start \-x \-u \$udp_offboard_port_local -r 4000000/mavlink start -x -u \$udp_offboard_port_local -r 4000000 -t ${MAVLINK_IP_TARGET}/" /work/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-rc.mavlink
